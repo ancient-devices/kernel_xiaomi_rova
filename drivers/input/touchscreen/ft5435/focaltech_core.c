@@ -732,10 +732,13 @@ static void fts_report_value(struct fts_ts_data *data)
 		return;
 	}
 
-	if(data->key_state) {
-		if(data->key_state && (~0x01)) input_report_key(data->input_dev, data->pdata->keys[0], 0);
-		if(data->key_state && (~0x02)) input_report_key(data->input_dev, data->pdata->keys[1], 0);
-		if(data->key_state && (~0x04)) input_report_key(data->input_dev, data->pdata->keys[2], 0);
+	if (data->key_state) {
+		if (data->key_state & (~0x01))
+			input_report_key(data->input_dev, data->pdata->keys[0], 0);
+		if (data->key_state & (~0x02))
+			input_report_key(data->input_dev, data->pdata->keys[1], 0);
+		if (data->key_state & (~0x04))
+			input_report_key(data->input_dev, data->pdata->keys[2], 0);
 		input_sync(data->input_dev);
 		data->key_state = 0;
 	}
@@ -1127,7 +1130,7 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 
 
 	err = request_threaded_irq(client->irq, NULL, fts_ts_interrupt,
-							  pdata->irq_gpio_flags | IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
+							  pdata->irq_gpio_flags | IRQF_ONESHOT | IRQF_TRIGGER_FALLING | IRQF_PERF_CRITICAL,
 							  client->dev.driver->name, data);
 	if (err) {
 		FTS_ERROR("Request irq failed!");
